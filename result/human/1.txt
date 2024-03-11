@@ -1,0 +1,81 @@
+Train auc:0.8768, f1:0.785742, aupr:0.854612, precision:0.828677, recall:0.747037
+Dev auc:0.964232, f1:0.876847, aupr:0.949828, precision:0.940141, recall:0.821538
+Test auc:0.972648, f1:0.882261, aupr:0.972905, precision:0.959044, recall:0.81686
+epoch1 loss:174.32093473738843
+Train auc:0.974181, f1:0.918756, aupr:0.969468, precision:0.935509, recall:0.902593
+Dev auc:0.974274, f1:0.897516, aupr:0.970958, precision:0.905956, recall:0.889231
+Test auc:0.978779, f1:0.920301, aupr:0.977801, precision:0.953271, recall:0.889535
+epoch2 loss:74.34778198308555
+Train auc:0.988717, f1:0.950832, aupr:0.987459, precision:0.959985, recall:0.941852
+Dev auc:0.978973, f1:0.918239, aupr:0.976044, precision:0.938907, recall:0.898462
+Test auc:0.981193, f1:0.91654, aupr:0.980465, precision:0.95873, recall:0.877907
+epoch3 loss:46.979250374983245
+Train auc:0.992407, f1:0.962949, aupr:0.989935, precision:0.968177, recall:0.957778
+Dev auc:0.981168, f1:0.927132, aupr:0.980345, precision:0.934375, recall:0.92
+Test auc:0.980717, f1:0.932153, aupr:0.980954, precision:0.946108, recall:0.918605
+epoch4 loss:40.98632725879069
+Train auc:0.993901, f1:0.965146, aupr:0.993319, precision:0.966221, recall:0.964074
+Dev auc:0.976645, f1:0.92575, aupr:0.97728, precision:0.951299, recall:0.901538
+Test auc:0.976859, f1:0.917044, aupr:0.974686, precision:0.952978, recall:0.883721
+epoch5 loss:32.06069599443518
+Train auc:0.995226, f1:0.97128, aupr:0.994982, precision:0.971821, recall:0.970741
+Dev auc:0.982724, f1:0.933333, aupr:0.980515, precision:0.919403, recall:0.947692
+Test auc:0.978902, f1:0.939306, aupr:0.9778, precision:0.933908, recall:0.944767
+epoch6 loss:28.12758326132702
+Train auc:0.997178, f1:0.975691, aupr:0.997192, precision:0.977687, recall:0.973704
+Dev auc:0.982733, f1:0.933535, aupr:0.980066, precision:0.916914, recall:0.950769
+Test auc:0.979863, f1:0.935252, aupr:0.978311, precision:0.925926, recall:0.944767
+epoch7 loss:21.693867805187754
+Train auc:0.998027, f1:0.980915, aupr:0.998069, precision:0.981461, recall:0.98037
+Dev auc:0.98361, f1:0.933333, aupr:0.981859, precision:0.919403, recall:0.947692
+Test auc:0.979766, f1:0.936599, aupr:0.978732, precision:0.928571, recall:0.944767
+epoch8 loss:17.879757174835582
+Train auc:0.998239, f1:0.981677, aupr:0.998053, precision:0.981132, recall:0.982222
+Dev auc:0.982239, f1:0.939394, aupr:0.979265, precision:0.925373, recall:0.953846
+Test auc:0.979145, f1:0.939481, aupr:0.977529, precision:0.931429, recall:0.947674
+epoch9 loss:16.956784414425886
+Train auc:0.998387, f1:0.983704, aupr:0.998277, precision:0.983704, recall:0.983704
+Dev auc:0.983275, f1:0.937405, aupr:0.98141, precision:0.930303, recall:0.944615
+Test auc:0.979642, f1:0.936599, aupr:0.977822, precision:0.928571, recall:0.944767
+epoch10 loss:15.711282421258078
+Train auc:0.999085, f1:0.986479, aupr:0.999055, precision:0.986662, recall:0.986296
+Dev auc:0.98406, f1:0.939908, aupr:0.983243, precision:0.941358, recall:0.938462
+Test auc:0.979303, f1:0.93586, aupr:0.977092, precision:0.938596, recall:0.93314
+epoch11 loss:12.287494734532334
+Train auc:0.999389, f1:0.989458, aupr:0.99935, precision:0.988179, recall:0.990741
+Dev auc:0.984342, f1:0.939535, aupr:0.983724, precision:0.946875, recall:0.932308
+Test auc:0.979515, f1:0.932749, aupr:0.977397, precision:0.938235, recall:0.927326
+epoch12 loss:10.12113052590653
+Train auc:0.999456, f1:0.990564, aupr:0.999422, precision:0.989649, recall:0.991481
+Dev auc:0.984298, f1:0.934579, aupr:0.98387, precision:0.946372, recall:0.923077
+Test auc:0.97881, f1:0.929619, aupr:0.976757, precision:0.93787, recall:0.921512
+epoch13 loss:9.417236733678838
+Train auc:0.999501, f1:0.990564, aupr:0.999471, precision:0.989649, recall:0.991481
+Dev auc:0.984342, f1:0.9375, aupr:0.984, precision:0.952381, recall:0.923077
+Test auc:0.978797, f1:0.929204, aupr:0.97704, precision:0.943114, recall:0.915698
+epoch14 loss:9.091660728975134
+Train auc:0.999493, f1:0.990554, aupr:0.99945, precision:0.990737, recall:0.99037
+Dev auc:0.98384, f1:0.94081, aupr:0.983173, precision:0.952681, recall:0.929231
+Test auc:0.978162, f1:0.928047, aupr:0.975336, precision:0.937685, recall:0.918605
+epoch15 loss:8.646698113517582
+Train auc:0.999621, f1:0.991864, aupr:0.999598, precision:0.990399, recall:0.993333
+Dev auc:0.984007, f1:0.936236, aupr:0.983189, precision:0.946541, recall:0.926154
+Test auc:0.978537, f1:0.928675, aupr:0.976448, precision:0.930029, recall:0.927326
+epoch16 loss:7.703677079804002
+Train auc:0.999665, f1:0.992041, aupr:0.99963, precision:0.991491, recall:0.992593
+Dev auc:0.983831, f1:0.939347, aupr:0.98288, precision:0.949686, recall:0.929231
+Test auc:0.978083, f1:0.928675, aupr:0.975928, precision:0.930029, recall:0.927326
+epoch17 loss:7.134314606916675
+Train auc:0.999709, f1:0.993343, aupr:0.999682, precision:0.991876, recall:0.994815
+Dev auc:0.983725, f1:0.9375, aupr:0.982776, precision:0.952381, recall:0.923077
+Test auc:0.977947, f1:0.931387, aupr:0.975952, precision:0.935484, recall:0.927326
+epoch18 loss:6.576082021067133
+Train auc:0.999721, f1:0.994265, aupr:0.999687, precision:0.993346, recall:0.995185
+Dev auc:0.983394, f1:0.939158, aupr:0.982442, precision:0.952532, recall:0.926154
+Test auc:0.977832, f1:0.931387, aupr:0.975623, precision:0.935484, recall:0.927326
+epoch19 loss:6.249583987972702
+Train auc:0.999737, f1:0.993892, aupr:0.999706, precision:0.993341, recall:0.994444
+Dev auc:0.983421, f1:0.939347, aupr:0.982594, precision:0.949686, recall:0.929231
+Test auc:0.977841, f1:0.930029, aupr:0.975776, precision:0.932749, recall:0.927326
+epoch20 loss:6.023105219451814
+Finally test result of auc:0.98066, f1:0.932749, aupr:0.977397, precision:0.938235, recall:0.927326
