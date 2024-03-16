@@ -70,11 +70,11 @@ def get_ids(compound_dict, protein_dict, ids):
 
 
 def save_result(path, filename, text):
-    if not os.path.exists(path):     #判断当前路径是否存在，没有则创建new文件夹
+    if not os.path.exists(path):     
         os.makedirs(path)
-    name = path + filename + '.txt'    #在当前py文件所在路径下创建txt
+    name = path + filename + '.txt'    #create txt file
     file = open(name,'a')
-    file.write(text+'\n')        #写入内容信息
+    file.write(text+'\n')        #write result information
     file.close()
 
 

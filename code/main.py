@@ -48,14 +48,13 @@ args.add_argument('-window', type=int, default=5, help='window size of cnn model
 args.add_argument('-layer_cnn', type=int, default=3, help='number of layer in cnn model')
 
 
-params, _ = args.parse_known_args() # 多余的参数设置可以保存起来，不会报错
+params, _ = args.parse_known_args()
 
 def train(model, data_train, data_dev, data_test, compound_dict, protein_dict, device, params):
-    criterion = nn.CrossEntropyLoss()  # 预测值的形状应为[batch_size, num_classes]，而真实值的形状应为[batch_size]
+    criterion = nn.CrossEntropyLoss()
     best_res = 0
     optimizer = optim.Adam(model.parameters(), lr=params.lr, weight_decay=0, amsgrad=True)
-    scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=10, gamma=0.5)  # 每训练step_size个epoch，更新一次参数
-    # lr_scheduler根据训练的epoch次数调整学习率
+    scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=10, gamma=0.5)
     batch_size = params.batch_size
     for epoch in range(params.num_epochs):
         model.train()
@@ -154,13 +153,12 @@ if __name__ == '__main__':
     print('The code run on the', device)
 
     data = load_data(data_dir)
-    # print(len(data))
     data = data2tensor(data, device)
     train_data, data1 = split_dataset(data, 0.8)
     dev_data, test_data = split_dataset(data1, 0.5)
-    print('训练集长度', len(train_data))
-    print('测试集长度', len(test_data))
-    print('验证集长度', len(dev_data))
+    print('train length', len(train_data))
+    print('test length', len(test_data))
+    print('validation length', len(dev_data))
 
     atom_dict = pickle.load(open(data_dir + 'atom_dict', 'rb'))
     amino_dict = pickle.load(open(data_dir + 'amino_dict', 'rb'))
@@ -189,13 +187,6 @@ if __name__ == '__main__':
     text = 'Finally test result of auc:{}, f1:{}, aupr:{}, precision:{}, recall:{}'.format(res[0], res[1], res[2], res[3], res[4])
     print(text)
     save_result(save_path, filename, text)
-    '''
-    训练集长度 4969
-    测试集长度 622
-    验证集长度 621
-    compound nums: 2508
-    protein nums: 1925
-    '''
 
 
 

@@ -133,7 +133,6 @@ def learn(bivae, data_matrix, epochs, batch_size, lr, beta_kl, device=torch.devi
             beta, _, p_mu, _ =  bivae(p_batch, compound=False, theta=bivae.theta)
             bivae.beta.data[p_ids] = beta.data
             bivae.mu_beta.data[p_ids] = p_mu.data
-        # print('protein loss',p_sum_loss)
 
         # compound side
         c_sum_loss = 0
@@ -151,13 +150,12 @@ def learn(bivae, data_matrix, epochs, batch_size, lr, beta_kl, device=torch.devi
             theta, _, c_mu, _ = bivae(c_batch, compound=True, beta=bivae.beta)
             bivae.theta.data[c_ids] = theta.data
             bivae.mu_theta.data[c_ids] = c_mu.data
-        # print('compound loss', c_sum_loss)
+
         if p_sum_loss+c_sum_loss < best_loss :
             best_loss = p_sum_loss+c_sum_loss
             best_bivae = bivae
-            # print('{}的bivae损失最小, 为{}'.format(epoch+1, best_loss))
 
-    # print('best bivae',best_bivae.mu_beta[0])
+
 
     # infer mu_beta
     for i in range(math.ceil(tx.shape[0] / batch_size)):
@@ -178,45 +176,6 @@ def learn(bivae, data_matrix, epochs, batch_size, lr, beta_kl, device=torch.devi
     return best_bivae
 
 
-class GATLayer(nn.Module):
-
-    def __init__(self, in_features, out_features, dropout=0.5, alpha=0.2, concat=True):
-        super(GATLayer, self).__init__()
-        self.in_features = in_features
-        self.out_features = out_features
-        self.dropout = dropout
-        self.alpha = alpha
-        self.concat = concat
-
-        self.W = nn.Parameter(torch.empty(size=(in_features, out_features)))
-        nn.init.xavier_uniform_(self.W.data, gain=1.414)
-        self.a = nn.Parameter(torch.empty(size=(2 * out_features, 1)))
-        nn.init.xavier_uniform_(self.a.data, gain=1.414)
-
-    def forward(self, h, adj):
-        Wh = torch.matmul(h, self.W)
-        a_input = self._prepare_attentional_mechanism_input(Wh)
-        e = F.leaky_relu(torch.matmul(a_input, self.a).squeeze(3), self.alpha)
-
-        zero_vec = -9e15 * torch.ones_like(e)
-        attention = torch.where(adj > 0, e, zero_vec)
-        attention = F.softmax(attention, dim=2)
-        h_prime = torch.bmm(attention, Wh)
-
-        return F.elu(h_prime) if self.concat else h_prime
-
-    def _prepare_attentional_mechanism_input(self, Wh):
-        b = Wh.size()[0]
-        N = Wh.size()[1]
-
-        Wh_repeated_in_chunks = Wh.repeat_interleave(N, dim=1) #重复张量的元素
-        Wh_repeated_alternating = Wh.repeat_interleave(N, dim=0).view(b, N*N, self.out_features)
-        all_combinations_matrix = torch.cat([Wh_repeated_in_chunks, Wh_repeated_alternating], dim=2)
-
-        return all_combinations_matrix.view(b, N, N, 2 * self.out_features)
-
-
-# 自定义节点更新特征的方式，mlp+bn+relu
 class ApplyNodeFunc(nn.Module):
     def __init__(self, mlp):
         super(ApplyNodeFunc, self).__init__()
@@ -231,82 +190,48 @@ class ApplyNodeFunc(nn.Module):
 
 
 class MLP(nn.Module):
-    # num_layers:共有多少层
-    # input_dim：输入维度
-    # hidden_dim：隐藏层维度，所有隐藏层维度都一样
-    # hidden_dim：输出维度
     def __init__(self, num_layers, input_dim, hidden_dim, output_dim):
-        """
-        num_layers: int
-            The number of linear layers
-        input_dim: int
-            The dimensionality of input features
-        hidden_dim: int
-            The dimensionality of hidden units at ALL layers
-        output_dim: int
-            The number of classes for prediction
-        """
+
         super(MLP, self).__init__()
-        self.linear_or_not = True  # default is linear model这个时候只有一层MLP
+        self.linear_or_not = True
         self.num_layers = num_layers
         self.output_dim = output_dim
 
-        # 层数合法性判断
         if num_layers < 1:
             raise ValueError("number of layers should be positive!")
-        elif num_layers == 1:  # 只有一层则按线性变换来玩，输入就是输出
+        elif num_layers == 1:
             # Linear model
             self.linear = nn.Linear(input_dim, output_dim)
-        else:  # 有多层则按下面代码处理
+        else:
             # Multi-layer model
             self.linear_or_not = False
             self.linears = torch.nn.ModuleList()
             self.batch_norms = torch.nn.ModuleList()
 
-            self.linears.append(nn.Linear(input_dim, hidden_dim))  # 第一层比较特殊，输入维度到隐藏层维度
-            for layer in range(num_layers - 2):  # 中间隐藏层可以循环，隐藏层维度到隐藏层维度
+            self.linears.append(nn.Linear(input_dim, hidden_dim))
+            for layer in range(num_layers - 2):
                 self.linears.append(nn.Linear(hidden_dim, hidden_dim))
-            self.linears.append(nn.Linear(hidden_dim, output_dim))  # 最后一层，隐藏层维度到输出维度
+            self.linears.append(nn.Linear(hidden_dim, output_dim))
 
             for layer in range(num_layers - 1):
                 self.batch_norms.append(nn.InstanceNorm1d((hidden_dim)))
 
-    def forward(self, x):  # 前向传播
-        if self.linear_or_not:  # 只有单层MLP
+    def forward(self, x):
+        if self.linear_or_not:
             return self.linear(x)
         else:
             h = x
             for i in range(self.num_layers - 1):
                 h = F.relu(self.batch_norms[i](self.linears[i](h)))
-            return self.linears[-1](h)  # 最后一层用线性变换把维度转到输出维度
+            return self.linears[-1](h)
 
 
 class GIN(nn.Module):
-    """GIN model初始化"""
+    """GIN model"""
     def __init__(self, num_layers, num_mlp_layers, input_dim, hidden_dim,
                  output_dim, final_dropout, learn_eps, graph_pooling_type,
                  neighbor_pooling_type):
-        """
-        num_layers: int这个是GIN的层数
-            The number of linear layers in the neural network
-        num_mlp_layers: intMLP的层数
-            The number of linear layers in mlps
-        input_dim: int
-            The dimensionality of input features
-        hidden_dim: int
-            The dimensionality of hidden units at ALL layers
-        output_dim: int
-            The number of classes for prediction
-        final_dropout: float最后一层的抓爆率
-            dropout ratio on the final linear layer
-        learn_eps: boolean在学习epsilon参数时是否区分节点本身和邻居节点
-            If True, learn epsilon to distinguish center nodes from neighbors
-            If False, aggregate neighbors and center nodes altogether.
-        neighbor_pooling_type: str邻居汇聚方式
-            how to aggregate neighbors (sum, mean, or max)
-        graph_pooling_type: str全图汇聚方式，和上面的邻居汇聚方式可以不一样
-            how to aggregate entire nodes in a graph (sum, mean or max)
-        """
+
         super(GIN, self).__init__()
         self.num_layers = num_layers
         self.learn_eps = learn_eps
@@ -314,20 +239,18 @@ class GIN(nn.Module):
         self.ginlayers = torch.nn.ModuleList()
         self.batch_norms = torch.nn.ModuleList()
 
-        for layer in range(self.num_layers - 1):  # 除了最后一层每层都定义一个MLP（num_mlp_layers层）来进行COMBINE
-            if layer == 0:  # 第一层GIN
+        for layer in range(self.num_layers - 1):
+            if layer == 0:
                 mlp = MLP(num_mlp_layers, input_dim, hidden_dim, hidden_dim)
             else:
                 mlp = MLP(num_mlp_layers, hidden_dim, hidden_dim, hidden_dim)
 
-            # 更新特征的方式是ApplyNodeFunc，邻居汇聚方式为neighbor_pooling_type
             self.ginlayers.append(
                 GINConv(ApplyNodeFunc(mlp), neighbor_pooling_type, 0, self.learn_eps))
             self.batch_norms.append(nn.InstanceNorm1d(hidden_dim))
 
         self.linears_prediction = torch.nn.ModuleList()
 
-        # 将每一层点的表征保存下来，然后作为最后的图的表征计算
         for layer in range(num_layers):
             if layer == 0:
                 self.linears_prediction.append(
@@ -338,7 +261,7 @@ class GIN(nn.Module):
 
         self.drop = nn.Dropout(final_dropout)
 
-        # 图表征消息汇聚的方式
+
         if graph_pooling_type == 'sum':
             self.pool = SumPooling()
         elif graph_pooling_type == 'mean':
@@ -348,18 +271,17 @@ class GIN(nn.Module):
         else:
             raise NotImplementedError
 
-    def forward(self, g, h):  # 前向传播
+    def forward(self, g, h):
         hidden_rep = [h]
 
-        for i in range(self.num_layers - 1):  # 根据GIN层数做循环
+        for i in range(self.num_layers - 1):
             h = self.ginlayers[i](g, h)
-            h = self.batch_norms[i](h)  # 接BN
-            h = F.relu(h)  # 接RELU
-            hidden_rep.append(h)  # 保存每一层的输出，作为最后图表征的计算
+            h = self.batch_norms[i](h)
+            h = F.relu(h)
+            hidden_rep.append(h)
 
         score_over_layer = 0
 
-        # 根据hidden_rep计算图表征
         for i, h in enumerate(hidden_rep):
             pooled_h = self.pool(g, h)
             score_over_layer += self.drop(self.linears_prediction[i](pooled_h))
@@ -406,7 +328,7 @@ class BiBAECPI(nn.Module):
             params.num_mlp_layers, params.dropout, params.alpha, params.window, params.layer_cnn, params.latent_dim, \
             params.hidden_dim, params.k, params.neighbor_pooling_type, params.graph_pooling_type
 
-        self.embedding_layer_atom = nn.Embedding(n_atom + 1, comp_dim)  # nn.Embedding(n,m)，n是单词数，m就是词向量的维度
+        self.embedding_layer_atom = nn.Embedding(n_atom + 1, comp_dim)  # nn.Embedding(n,m)
         self.embedding_layer_amino = nn.Embedding(n_amino + 1, prot_dim)
 
         self.bivae = bivae
@@ -420,7 +342,7 @@ class BiBAECPI(nn.Module):
         self.encoder = Encoder(prot_dim, hid_dim=latent_dim, n_layers=layer_cnn, kernel_size=2 * window + 1, dropout=dropout, device=torch.device('cuda'))
 
         self.fp0 = nn.Parameter(torch.empty(size=(1024, latent_dim)))
-        nn.init.xavier_uniform_(self.fp0, gain=1.414)  # 均匀分布初始化
+        nn.init.xavier_uniform_(self.fp0, gain=1.414)
         self.fp1 = nn.Parameter(torch.empty(size=(latent_dim, k)))
         nn.init.xavier_uniform_(self.fp1, gain=1.414)
 

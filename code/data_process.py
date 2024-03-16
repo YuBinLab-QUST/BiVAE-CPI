@@ -7,16 +7,15 @@ from rdkit.Chem import AllChem
 from collections import defaultdict
 
 
-atom_dict = defaultdict(lambda: len(atom_dict))  # defaultdict的作用是在于，当字典里的element不存在但被查找时，返回的不是keyError而是一个默认值
+atom_dict = defaultdict(lambda: len(atom_dict))
 bond_dict = defaultdict(lambda: len(bond_dict))
 fingerprint_dict = defaultdict(lambda: len(fingerprint_dict))
 edge_dict = defaultdict(lambda: len(edge_dict))
 word_dict = defaultdict(lambda: len(word_dict))
 
 
-# 通过defaultdict生成C、H、O的索引
 def create_atoms(mol):
-    atoms = [a.GetSymbol() for a in mol.GetAtoms()]  # 获取每个原子【C O H】，形成列表
+    atoms = [a.GetSymbol() for a in mol.GetAtoms()]
     for a in mol.GetAromaticAtoms():
         i = a.GetIdx()
         atoms[i] = (atoms[i], 'aromatic')
@@ -28,12 +27,12 @@ def create_ijbonddict(mol):
     i_jbond_dict = defaultdict(lambda: [])
     for b in mol.GetBonds():
         i, j = b.GetBeginAtomIdx(), b.GetEndAtomIdx()
-        bond = bond_dict[str(b.GetBondType())]  # 会向bond_dict添加元素
+        bond = bond_dict[str(b.GetBondType())]
         i_jbond_dict[i].append((j, bond))
         i_jbond_dict[j].append((i, bond))
 
     atoms_set = set(range(mol.GetNumAtoms()))
-    isolate_atoms = atoms_set - set(i_jbond_dict.keys())  # 集合a-b：从a集合中删除b中出现的元素
+    isolate_atoms = atoms_set - set(i_jbond_dict.keys())
     bond = bond_dict['nan']
     for a in isolate_atoms:
         i_jbond_dict[a].append((a, bond))
@@ -70,7 +69,7 @@ def atom_features(atoms, i_jbond_dict, radius):
 def create_adjacency(mol):
     adjacency = Chem.GetAdjacencyMatrix(mol)
     adjacency = np.array(adjacency)
-    adjacency += np.eye(adjacency.shape[0], dtype=int)  # np.eye生成对角矩阵
+    adjacency += np.eye(adjacency.shape[0], dtype=int)
     return adjacency
 
 
@@ -87,7 +86,7 @@ def split_sequence(sequence, ngram):
 
 def dump_dictionary(dictionary, filename):
     with open(filename, 'wb') as f:
-        pickle.dump(dict(dictionary), f)   # 将dict(dictionary)保存到文件f
+        pickle.dump(dict(dictionary), f)
 
 
 def get_matrix(data_list):
@@ -106,7 +105,6 @@ def get_matrix(data_list):
 
     compound_nums = len(compound_dict)
     protein_nums = len(protein_dict)
-    print('compound nums:', compound_nums, 'protein nums:', protein_nums)
     data_matrix = np.zeros((compound_nums, protein_nums))
     print(data_matrix.shape)
     for no, data in enumerate(data_list):
@@ -123,17 +121,16 @@ def extract_input_data(input_path, output_path, radius, ngram):
 
     data_list = [d for d in data_list if '.' not in d.strip().split()[0]]
     N = len(data_list)
-    print('数据集长度',N)
     data_matrix, compound_map, protein_map = get_matrix(data_list)
 
     compounds, adjacencies, fps, proteins, interactions = [], [], [], [], []
     compound_dict, protein_dict = {}, {}
     for no, data in enumerate(data_list):
-        smiles, sequence, interaction = data.strip().split(" ") # 提取每一行数据
+        smiles, sequence, interaction = data.strip().split(" ")
 
-        mol = Chem.AddHs(Chem.MolFromSmiles(smiles))  # 显式添加H原子
-        atoms = create_atoms(mol)  # 将原子分别转变为数字表示
-        i_jbond_dict = create_ijbonddict(mol) # 返回字典，存储两个原子之间键的类型
+        mol = Chem.AddHs(Chem.MolFromSmiles(smiles))
+        atoms = create_atoms(mol)
+        i_jbond_dict = create_ijbonddict(mol)
 
         compounds.append(atom_features(atoms, i_jbond_dict, radius))
         adjacencies.append(create_adjacency(mol))
@@ -160,16 +157,11 @@ if __name__=='__main__':
     dataset = 'human'
     input_path = '../data/' + dataset + '/' + '3/' + 'data.txt'
     output_path = '../dataset/' + dataset + '/3'
-    radius, ngram = 2, 3  # ngram:把蛋白质序列划分为3的若干子序列
+    radius, ngram = 2, 3
     extract_input_data(input_path, output_path, radius, ngram)
 
     dump_dictionary(fingerprint_dict, os.path.join(output_path, 'atom_dict'))
     dump_dictionary(word_dict, os.path.join(output_path, 'amino_dict'))
     print('save successfully')
-
-    compound_dict = pickle.load(open(output_path + '/compound_dict', 'rb'))
-    protein_dict = pickle.load(open(output_path + '/protein_dict', 'rb'))
-    print(len(compound_dict))
-    print(len(protein_dict))
 
 
