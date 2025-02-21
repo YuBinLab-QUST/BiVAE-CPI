@@ -5,6 +5,7 @@ import torch
 from sklearn import metrics
 from sklearn.metrics import roc_auc_score, precision_recall_curve, precision_score, recall_score, f1_score
 
+
 def load_data(dir_input):
     compounds = np.load(dir_input + 'compounds.npy', allow_pickle=True)
     adjacencies = np.load(dir_input + 'adjacencies.npy', allow_pickle=True)
