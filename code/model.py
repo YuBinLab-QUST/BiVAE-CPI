@@ -9,6 +9,7 @@ import torch.nn.functional as F
 from dgl.nn.pytorch.conv import GINConv
 from dgl.nn.pytorch.glob import SumPooling, AvgPooling, MaxPooling
 
+
 EPS = 1e-10
 ACT = {
     "sigmoid": nn.Sigmoid(),
@@ -17,6 +18,7 @@ ACT = {
     "relu": nn.ReLU(),
     "relu6": nn.ReLU6(),
 }
+
 class BiVAE(nn.Module):
     def __init__(self, k, compound_encoder_structure, protein_encoder_structure, likelihood, act_fn):
         super(BiVAE, self).__init__()
