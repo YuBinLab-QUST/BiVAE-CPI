@@ -78,4 +78,4 @@ Train auc:0.999605, f1:0.984435, aupr:0.998139, precision:0.98506, recall:0.9838
 Dev auc:0.990658, f1:0.935393, aupr:0.971551, precision:0.948718, recall:0.922438
 Test auc:0.985127, f1:0.923077, aupr:0.967286, precision:0.954907, recall:0.8933
 epoch20 loss:19.46462062772124
-Finally test result of auc:0.989571, f1:0.938303, aupr:0.974924, precision:0.973333, recall:0.905707
+Finally test result of auc:0.989571, f1:0.938303, aupr:0.974924, precision:0.973333, recall:0.905707 
