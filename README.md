@@ -41,7 +41,7 @@ Execute the main.py file to train the model. Hyperparameters can be modifed from
 
 ```python
 # Run the commandline
-python main.py -dataset human -lr 0.0005 -k 20 -encoder_structure=[40] -likelihood='pois' -gin_layers=3
+python main.py -dataset human -lr 0.0005 -k 20 -encoder_structure=[40] -likelihood='pois' -gin_layers=3 
 ```
 
 ## 4. Run on your datasets
