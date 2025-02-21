@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*
-import os
+import os  
 import pickle
 import numpy as np
 from rdkit import Chem
