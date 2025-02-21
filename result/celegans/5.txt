@@ -1,5 +1,5 @@
 Train auc:0.951857, f1:0.769543, aupr:0.874478, precision:0.917766, recall:0.66254
-Dev auc:0.99001, f1:0.899705, aupr:0.963185, precision:0.962145, recall:0.844875
+Dev auc:0.99001, f1:0.899705, aupr:0.963185, precision:0.962145, recall:0.844875 
 Test auc:0.988693, f1:0.907407, aupr:0.972522, precision:0.971671, recall:0.851117
 epoch1 loss:220.24364922483974
 Train auc:0.988474, f1:0.913503, aupr:0.966484, precision:0.951513, recall:0.878413
